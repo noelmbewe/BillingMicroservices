@@ -30,11 +30,31 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Register HttpClient for Lago
+// Register HttpClient for Lago Invoice Service
+builder.Services.AddHttpClient<ILagoInvoiceService, LagoInvoiceService>((serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    var lagoBaseUrl = configuration["Lago:BaseUrl"] ?? "http://localhost:3000";
+    var lagoApiKey = configuration["Lago:ApiKey"] ?? "";
+
+    client.BaseAddress = new Uri(lagoBaseUrl);
+    client.DefaultRequestHeaders.Clear();
+    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {lagoApiKey}");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromMinutes(5);
+});
+
+// Keep your existing HttpClient registration if you have other Lago services
 builder.Services.AddHttpClient<ILagoService, LagoService>();
 
-// Register application services
+// Register Invoice-specific services (required by InvoiceController)
+builder.Services.AddScoped<IInvoiceService, InvoiceApplicationService>();
+builder.Services.AddScoped<ILagoInvoiceService, LagoInvoiceService>();
+
+// Register your existing billing services
 builder.Services.AddScoped<IBillingService, BillingApplicationService>();
+
+// Register message publisher
 builder.Services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
 
 // Add CORS
