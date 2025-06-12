@@ -57,6 +57,15 @@ builder.Services.AddScoped<IBillingService, BillingApplicationService>();
 // Register message publisher
 builder.Services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
 
+
+builder.Services.AddHttpClient<ILagoPaymentService, LagoPaymentService>();
+
+// Application Services
+builder.Services.AddScoped<IPaymentService, PaymentApplicationService>();
+
+// Infrastructure Services
+builder.Services.AddScoped<ILagoPaymentService, LagoPaymentService>();
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -76,10 +85,9 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Billing Service API V1");
-    c.RoutePrefix = "swagger"; // This makes Swagger available at /swagger
+    c.RoutePrefix = "swagger";
 });
 
-// Add a root redirect to swagger for easier access
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.UseHttpsRedirection();

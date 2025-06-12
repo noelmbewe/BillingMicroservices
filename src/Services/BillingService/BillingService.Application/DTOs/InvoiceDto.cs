@@ -1,9 +1,4 @@
-﻿// =========================
-// Application Layer - Invoice DTOs
-// =========================
-
-// src/Services/BillingService/BillingService.Application/DTOs/InvoiceDto.cs
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace BillingService.Application.DTOs;
 
